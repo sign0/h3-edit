@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Open-H3-Map</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700&amp;subset=latin-ext" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
+	<link rel="stylesheet" type="text/css" href="./lib/ol5.1.3/ol.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script type="text/javascript" src="./lib/lodash/lodash.min.js"></script>
+	<script type="text/javascript" src="./lib/ol5.1.3/ol.js"></script>
+	<script type="text/javascript" src="./lib/h3-js/dist/bundle.js"></script>
+	<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+
+</head>
+<body>
+	<div id="map" class="map"></div>
+
+	<div id="panel">
+		<a id="panel-open-button" href="#" onclick="openPanel();"><</a>
+		<div id="panel-menu">
+			<a class="panel-menu-button" href="#" onclick="closePanel();">
+				>
+			</a>
+			<div class="separator">|</div>
+			<a class="panel-menu-button" href="#" onclick="switchPanel('h3');">
+				H3
+			</a>
+			<div class="separator">|</div>
+			<a class="panel-menu-button" href="#" onclick="switchPanel('geojson');">
+				GeoJson
+			</a>
+		</div>
+		<textarea id="h3" class="panel-textarea" name="panel-textarea-h3"></textarea>
+		<textarea id="geojson" class="panel-textarea" name="panel-textarea-geojson"></textarea>
+
+	</div>
+
+	<div id="footer">
+		<div class="inline">
+			<div class="subPanel">
+				<div id="mouse-position"></div>
+				<label>Résolution : </label>
+				<input id="resolution" type="number" min="0" max="15" value="7"/>
+				<div>Résolution Down : key "q" : </div>
+				<div>Résolution Up : key "w"</div>
+			</div>
+			<div class="subPanel">
+				<div>Set Cell : Key "shift" + click</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="./js/script.js"></script>
+</body>
+</html>

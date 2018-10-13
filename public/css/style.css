@@ -1,0 +1,99 @@
+body {
+  font-family: 'Quicksand', sans-serif;
+  margin: 0px;
+}
+
+.map {
+	position: relative;
+  width: 100%;
+  height: -webkit-fill-available;
+}
+
+#panel {
+	position: fixed;
+  width: 400px;
+  height: -webkit-fill-available;
+  top: 0px;
+  background-color: #262626;
+  padding: 10px;
+  padding-right: 15px;
+  padding-bottom: 85px;
+  right: 0px;
+  z-index: 1;
+}
+
+#footer {
+	position: absolute;
+  width: 100vw;
+  height: 55px;
+  bottom: 0px;
+  background-color: #262626;
+  padding: 10px;
+  z-index: 2;
+  color: white;
+}
+
+#panel-menu {
+	width: 405px;
+	height: 50px;
+	display: inline-flex;
+}
+
+.panel-menu-button {
+	width: auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  font-size: 25px;
+  font-weight: 400;
+  color: white;
+  text-decoration: none;
+}
+
+.separator {
+	width: 1px;
+  color: white;
+  font-weight: 900;
+  margin-top: 5px;
+  font-size: 30px;
+}
+
+.inline {
+	display: inline-flex;
+}
+
+.subPanel {
+	margin-right: 42px;
+}
+
+#h3 {
+	display: block;
+}
+
+#geojson: {
+	display: none;
+}
+
+.panel-textarea {
+  position: absolute;
+	width: 400px;
+	height: 80%;
+  top: 70px;
+}
+
+#panel-open-button {
+	display: none;
+	width: 50px;
+	height: 50px;
+  left: -50px;
+  position: absolute;
+  z-index: 10;
+  background-color: #262626;
+  text-align: center;
+  line-height: 50px;
+  font-size: 25px;
+  color: white;
+  text-decoration: none;
+}
+
+

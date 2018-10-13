@@ -1,0 +1,93 @@
+{
+  "_from": "h3-js",
+  "_id": "h3-js@3.0.2",
+  "_inBundle": false,
+  "_integrity": "sha512-xRTCZi/m3yiH01D7W7FOkp2kc1ILET+mzccsDOnja29xIzTSX0TAwUFqQDdKid5B2Xf+H2AwqjKDTkm8kYg7rg==",
+  "_location": "/h3-js",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "h3-js",
+    "name": "h3-js",
+    "escapedName": "h3-js",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/h3-js/-/h3-js-3.0.2.tgz",
+  "_shasum": "99a7d3251a6ffb21d8d885f1e6ecf2fd96248f69",
+  "_spec": "h3-js",
+  "_where": "C:\\Users\\admsignorino\\Desktop\\aladin2hex",
+  "author": {
+    "name": "David Ellis",
+    "email": "d.f.ellis@ieee.org"
+  },
+  "bugs": {
+    "url": "https://github.com/uber/h3-js/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Nick Rabinowitz",
+      "email": "nickr@uber.com"
+    }
+  ],
+  "deprecated": false,
+  "description": "Emscripten transpiled libh3 'bindings' for Node/Web JS",
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "buble": "^0.19.3",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-uber-es2015": "^3.1.2",
+    "eslint-plugin-prettier": "^2.6.0",
+    "faucet": "0.0.1",
+    "istanbul": "^0.4.3",
+    "prettier": "^1.12.1",
+    "tape": "^4.8.0"
+  },
+  "engines": {
+    "node": ">=4",
+    "npm": ">=3",
+    "yarn": ">=1.3.0"
+  },
+  "es2015": "lib/h3core.js",
+  "homepage": "https://github.com/uber/h3-js#readme",
+  "keywords": [
+    "h3",
+    "hexagon",
+    "spatial-indexing",
+    "emscripten",
+    "geolocation"
+  ],
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "name": "h3-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uber/h3-js.git"
+  },
+  "scripts": {
+    "benchmarks": "yarn run dist-test && node dist/test/benchmarks.js",
+    "benchmarks-es6": "node test/benchmarks.js",
+    "build-emscripten": "./.build-emscripten.sh",
+    "cover": "istanbul cover -x out/*.js -- test/index.js",
+    "dist": "yarn run dist-clean && mkdir -p dist/out && buble -i lib -o dist/lib && cp out/libh3.js dist/out",
+    "dist-clean": "rm -rf dist",
+    "dist-test": "yarn run dist && buble -i test -o dist/test",
+    "lint": "eslint lib* test/*",
+    "prepublish": "yarn run dist",
+    "prettier": "prettier --write --single-quote --no-bracket-spacing --print-width=100 'lib/**/*.js' 'build/**/*.js' 'test/**/*.js'",
+    "test": "yarn run dist-test && yarn lint && yarn run test-es6 && yarn run test-dist && yarn run test-parity",
+    "test-dist": "node dist/test/index.js | faucet",
+    "test-es6": "yarn run test-raw | faucet",
+    "test-parity": "node test/test-parity.js | faucet",
+    "test-raw": "node test/index.js"
+  },
+  "version": "3.0.2"
+}
