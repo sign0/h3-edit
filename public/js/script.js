@@ -5,8 +5,10 @@ var MOUSEH3 = h3.geoToH3(CENTER[1], CENTER[0], RESOLUTION);
 var MOUSECOORDS = null;
 var CELLSTROKEOPACITY = .33;
 var CELLFILLOPACITY = 0;
-var CELLSTROKE = "rgba(255, 165, 0, "+CELLSTROKEOPACITY+")";
-var CELLFILL = "rgba(255, 165, 0, "+CELLFILLOPACITY+")";
+var CELLSTROKERGBA = [255, 165, 0];
+var CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
+var CELLFILLRGBA = [255, 165, 0];
+var CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
 //var IDXGRID = {};
 var TILES = {};
 
@@ -481,9 +483,8 @@ var closePanel = function() {
 
 $("#fill").spectrum({
   move: function(tinycolor) {
-  	console.log("moveColor1:", CELLFILL);
-  	CELLFILL = "rgba("+Math.round(tinycolor._r)+","+Math.round(tinycolor._g)+","+Math.round(tinycolor._b)+","+CELLFILLOPACITY+")";
-  	console.log("moveColor2:", CELLFILL);
+  	CELLFILLRGBA = [Math.round(tinycolor._r),Math.round(tinycolor._g),Math.round(tinycolor._b)];
+		CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
   },
   showPaletteOnly: true,
   togglePaletteOnly: true,
@@ -504,9 +505,8 @@ $("#fill").spectrum({
 
 $("#stroke").spectrum({
   move: function(tinycolor) {
-  	console.log("moveColor1:", CELLSTROKE);
-  	CELLSTROKE = "rgba("+Math.round(tinycolor._r)+","+Math.round(tinycolor._g)+","+Math.round(tinycolor._b)+","+CELLSTROKEOPACITY+")";
-  	console.log("moveColor2:", CELLSTROKE);
+  	CELLSTROKERGBA = [Math.round(tinycolor._r),Math.round(tinycolor._g),Math.round(tinycolor._b)];
+		CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
   },
   showPaletteOnly: true,
   togglePaletteOnly: true,
@@ -528,24 +528,28 @@ $("#stroke").spectrum({
 var addCellFillOpacity = function() {
 	if (CELLFILLOPACITY+.1 < 1) CELLFILLOPACITY = CELLFILLOPACITY+.1;
 	else CELLFILLOPACITY = 1;
+	CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
 	$("#fill-opacity-value").val(CELLFILLOPACITY);
 };
 
 var removeCellFillOpacity = function() {
 	if (CELLFILLOPACITY-.1 > 0) CELLFILLOPACITY = CELLFILLOPACITY-.1;
 	else CELLFILLEOPACITY = 0;
+	CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
 	$("#fill-opacity-value").val(CELLFILLOPACITY);
 };
 
 var addCellStrokeOpacity = function() {
 	if (CELLSTROKEOPACITY+.1 < 1) CELLSTROKEOPACITY = CELLSTROKEOPACITY+.1;
 	else CELLSTROKEOPACITY = 1;
+	CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
 	$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
 };
 
 var removeCellStrokeOpacity = function() {
 	if (CELLSTROKEOPACITY-.1 > 0) CELLSTROKEOPACITY = CELLSTROKEOPACITY-.1;
 	else CELLSTROKEOPACITY = 0;
+	CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
 	$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
 };
 
