@@ -74,6 +74,10 @@ body {
 	display: none;
 }
 
+#edit: {
+  display: none;
+}
+
 .panel-textarea {
   position: absolute;
 	width: 400px;
@@ -95,5 +99,53 @@ body {
   color: white;
   text-decoration: none;
 }
+
+#panel-icon-edit {
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
+  margin-top: -2px;
+}
+
+#panel-icon-tools {
+  width: 66px;
+  height: 30px;
+  padding: 5px;
+  margin-top: 8px;
+}
+
+.panel-icon-tool-selected {
+  border-style: solid !important;
+  border-color: white !important;
+  border-radius: 5px !important;
+}
+
+#tool-button-add {
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+  margin-right: 25px;
+}
+
+#tool-button-remove {
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+  margin-right: 25px;
+}
+
+#tool-button-move {
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+  margin-right: 25px;
+}
+
 
 

@@ -3,6 +3,10 @@ var ZOOM = 12.5;
 var RESOLUTION = 7;
 var MOUSEH3 = h3.geoToH3(CENTER[1], CENTER[0], RESOLUTION);
 var MOUSECOORDS = null;
+var CELLSTROKEOPACITY = .33;
+var CELLFILLOPACITY = 0;
+var CELLSTROKE = "rgba(255, 165, 0, "+CELLSTROKEOPACITY+")";
+var CELLFILL = "rgba(255, 165, 0, "+CELLFILLOPACITY+")";
 //var IDXGRID = {};
 var TILES = {};
 
@@ -18,6 +22,36 @@ var defaultsHash = {
 	"871fb4675ffffff": {
 		"type": "Feature",
 		"geometry": h3.h3ToGeo("871fb4675ffffff", true)
+	},
+
+	"871fb4644ffffff": {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo("871fb4644ffffff", true)
+	},
+	"871fb4670ffffff": {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo("871fb4670ffffff", true)
+	},
+	"871fb4674ffffff": {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo("871fb4674ffffff", true)
+	},
+
+	"871fb4663ffffff": {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo("871fb4663ffffff", true)
+	},
+	"871fb475bffffff": {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo("871fb475bffffff", true)
+	},
+	"871fb4666ffffff": {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo("871fb4666ffffff", true)
+	},
+	"871fb4660ffffff": {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo("871fb4660ffffff", true)
 	}
 };
 
@@ -63,7 +97,7 @@ var styles = {
 	}),
 	'Polygon': new ol.style.Style({
 		stroke: new ol.style.Stroke({
-			color: "rgba(255, 0, 0, .33)",
+			color: "rgba(255, 165, 0, .33)",
 			lineDash: [15],
 			width: 10
 		}),
@@ -160,12 +194,31 @@ var map = new ol.Map({
 	view: new ol.View({
 		center: ol.proj.fromLonLat(CENTER),
 		zoom: ZOOM,
-	})
+	}),
+  interactions: new ol.interaction.defaults().extend([
+  	//new ol.interaction.Draw({
+  	//	source: layerCells
+  	//})
+  ])
 });
 
 /*
 //
 */
+
+var hex2Rgba = function(hex, opactity){
+  var c;
+  if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+    c = hex.substring(1).split("");
+    if(c.length== 3){
+      c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+    }
+    c = "0x" + c.join("");
+    if (opactity === undefined || opactity === null || opactity > 1 || opactity < 0) opactity = 1;
+    return "rgba("+[(c>>16)&255, (c>>8)&255, c&255].join(",")+","+opactity+")";
+  }
+  throw new Error('Bad Hex');
+};
 
 var polygonH3To4326 = function(coords) {
 	for (var i in coords) {
@@ -190,6 +243,8 @@ var updateHexCursor = function(lat, lon, resolution) {
 	}
 };
 
+
+
 map.on("pointermove", function(evt) {
 	if (evt.dragging) return;
 	MOUSECOORDS = evt.coordinate;
@@ -197,19 +252,55 @@ map.on("pointermove", function(evt) {
 	updateHexCursor(point3857To4326[1], point3857To4326[0]);
 });
 
+
+
+
+var currentTool = "add";
+
+var toolAdd = function() {
+  $("#tool-button-add").addClass("panel-icon-tool-selected");
+  $("#tool-button-remove").removeClass("panel-icon-tool-selected");
+  $("#tool-button-move").removeClass("panel-icon-tool-selected");
+  currentTool = "add";
+};
+
+var toolRemove = function() {
+  $("#tool-button-add").removeClass("panel-icon-tool-selected");
+  $("#tool-button-remove").addClass("panel-icon-tool-selected");
+  $("#tool-button-move").removeClass("panel-icon-tool-selected");
+  currentTool = "remove";
+};
+
+
+
+
 var resolutionForm = document.getElementById("resolution");
 resolutionForm.addEventListener("change", function(event) {
 	console.log("FORM", event);
 	RESOLUTION = event.target.valueAsNumber;
 });
 
+
+
+
 map.on("click", _.debounce(function(evt) {
-	if (evt.originalEvent.shiftKey === true) {
+	if (evt.originalEvent.shiftKey === true || currentTool === "add") {
 		map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
 			insertCell(feature);
 		});
+	} else if (currentTool === "remove") {
+		if (h3.h3GetResolution(feature.get("hash")) === RESOLUTION) {
+			map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+				removeCell(feature);
+			});
+		}
+	} else {
+		//
 	}
 }, 10));
+
+
+
 
 document.addEventListener("keydown", function(event) {
 	if (event.which === 81) { // KEY Q : RESOLUTION DOWN
@@ -224,6 +315,9 @@ document.addEventListener("keydown", function(event) {
 	}
 });
 
+
+
+
 var insertCell = function(feature) {
 	var hash = feature.get("hash");
 	if (hash && h3.h3IsValid(hash) && !h3Dataset[hash]) {
@@ -236,22 +330,22 @@ var insertCell = function(feature) {
 		var cell = feature.clone();
 		var cellStyle = new ol.style.Style({
 			stroke: new ol.style.Stroke({
-				color: "rgba(255, 0, 0, .33)",
+				color: CELLSTROKE,
 				lineDash: [8],
 				width: 5
 			}),
 			fill: new ol.style.Fill({
-				color: "rgba(255, 255, 255, .0)"
+				color: CELLFILL
 			}),
 			text: new ol.style.Text({
 				font: "16px Quicksand, sans-serif",
 				text: feature.get("hash"),
 				fill: new ol.style.Fill({
-					color: "red"
+					color: "rgba(0, 0, 0, .66)"
 				}),
 					stroke: new ol.style.Stroke({
-					color: "white",
-					width: 3
+					color: "rgba(255, 255, 255, .66)",
+					width: 6
 				})
 			})
 		});
@@ -278,6 +372,15 @@ var insertCell = function(feature) {
 };
 
 
+var removeCell = function(feature) {
+	console.log(1, h3String);
+	h3String = h3String.replace(feature.get("hash")+"\n", "");
+	$("textarea#h3").text(h3String);
+	console.log(2, h3String);
+	layerCells.getSource().removeFeature(feature);
+	delete h3Dataset[feature.get("hash")];
+};
+
 
 
 
@@ -303,10 +406,18 @@ var switchPanel = function(id) {
 		panel = id;
 		$("#geojson").show();
 		$("#h3").hide();
+		$("#edit").hide();
 	}
 	if (id === "h3") {
 		panel = id;
 		$("#h3").show();
+		$("#geojson").hide();
+		$("#edit").hide();
+	}
+	if (id === "edit") {
+		panel = id;
+		$("#edit").show();
+		$("#h3").hide();
 		$("#geojson").hide();
 	}
 };
@@ -347,7 +458,8 @@ $("textarea#geojson").bind("input propertychange", function(evt) {
 	if (panel === "geojson") console.log("evt:", evt, $("textarea#geojson").val());
 });
 
-switchPanel("h3");
+//switchPanel("h3");
+switchPanel("edit");
 
 var openPanel = function() {
   $("#panel-open-button").hide();
@@ -367,7 +479,75 @@ var closePanel = function() {
 };
 
 
+$("#fill").spectrum({
+  move: function(tinycolor) {
+  	console.log("moveColor1:", CELLFILL);
+  	CELLFILL = "rgba("+Math.round(tinycolor._r)+","+Math.round(tinycolor._g)+","+Math.round(tinycolor._b)+","+CELLFILLOPACITY+")";
+  	console.log("moveColor2:", CELLFILL);
+  },
+  showPaletteOnly: true,
+  togglePaletteOnly: true,
+  togglePaletteMoreText: "more",
+  togglePaletteLessText: "less",
+  color: "orange",
+  palette: [
+    ["#000","#444","#666","#999","#ccc","#eee","#f3f3f3","#fff"],
+    ["#f00","orange","#ff0","#0f0","#0ff","#00f","#90f","#f0f"],
+    ["#f4cccc","#fce5cd","#fff2cc","#d9ead3","#d0e0e3","#cfe2f3","#d9d2e9","#ead1dc"],
+    ["#ea9999","#f9cb9c","#ffe599","#b6d7a8","#a2c4c9","#9fc5e8","#b4a7d6","#d5a6bd"],
+    ["#e06666","#f6b26b","#ffd966","#93c47d","#76a5af","#6fa8dc","#8e7cc3","#c27ba0"],
+    ["#c00","#e69138","#f1c232","#6aa84f","#45818e","#3d85c6","#674ea7","#a64d79"],
+    ["#900","#b45f06","#bf9000","#38761d","#134f5c","#0b5394","#351c75","#741b47"],
+    ["#600","#783f04","#7f6000","#274e13","#0c343d","#073763","#20124d","#4c1130"]
+  ]
+});
 
+$("#stroke").spectrum({
+  move: function(tinycolor) {
+  	console.log("moveColor1:", CELLSTROKE);
+  	CELLSTROKE = "rgba("+Math.round(tinycolor._r)+","+Math.round(tinycolor._g)+","+Math.round(tinycolor._b)+","+CELLSTROKEOPACITY+")";
+  	console.log("moveColor2:", CELLSTROKE);
+  },
+  showPaletteOnly: true,
+  togglePaletteOnly: true,
+  togglePaletteMoreText: "more",
+  togglePaletteLessText: "less",
+  color: "orange",
+  palette: [
+    ["#000","#444","#666","#999","#ccc","#eee","#f3f3f3","#fff"],
+    ["#f00","orange","#ff0","#0f0","#0ff","#00f","#90f","#f0f"],
+    ["#f4cccc","#fce5cd","#fff2cc","#d9ead3","#d0e0e3","#cfe2f3","#d9d2e9","#ead1dc"],
+    ["#ea9999","#f9cb9c","#ffe599","#b6d7a8","#a2c4c9","#9fc5e8","#b4a7d6","#d5a6bd"],
+    ["#e06666","#f6b26b","#ffd966","#93c47d","#76a5af","#6fa8dc","#8e7cc3","#c27ba0"],
+    ["#c00","#e69138","#f1c232","#6aa84f","#45818e","#3d85c6","#674ea7","#a64d79"],
+    ["#900","#b45f06","#bf9000","#38761d","#134f5c","#0b5394","#351c75","#741b47"],
+    ["#600","#783f04","#7f6000","#274e13","#0c343d","#073763","#20124d","#4c1130"]
+  ]
+});
+
+var addCellFillOpacity = function() {
+	if (CELLFILLOPACITY+.1 < 1) CELLFILLOPACITY = CELLFILLOPACITY+.1;
+	else CELLFILLOPACITY = 1;
+	$("#fill-opacity-value").val(CELLFILLOPACITY);
+};
+
+var removeCellFillOpacity = function() {
+	if (CELLFILLOPACITY-.1 > 0) CELLFILLOPACITY = CELLFILLOPACITY-.1;
+	else CELLFILLEOPACITY = 0;
+	$("#fill-opacity-value").val(CELLFILLOPACITY);
+};
+
+var addCellStrokeOpacity = function() {
+	if (CELLSTROKEOPACITY+.1 < 1) CELLSTROKEOPACITY = CELLSTROKEOPACITY+.1;
+	else CELLSTROKEOPACITY = 1;
+	$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
+};
+
+var removeCellStrokeOpacity = function() {
+	if (CELLSTROKEOPACITY-.1 > 0) CELLSTROKEOPACITY = CELLSTROKEOPACITY-.1;
+	else CELLSTROKEOPACITY = 0;
+	$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
+};
 
 
 
