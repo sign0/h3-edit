@@ -12,50 +12,35 @@ var CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+"
 //var IDXGRID = {};
 var TILES = {};
 
-var defaultsHash = {
-	"871fb4662ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4662ffffff", true)
-	},
-	"871fb4671ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4671ffffff", true)
-	},
-	"871fb4675ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4675ffffff", true)
-	},
+var HASHDEMO = [
+	"871fb4662ffffff",
+	"871fb4663ffffff",
+	"871fb4660ffffff",
+	"881fb4662bfffff",
+	"881fb46629fffff",
+	"881fb4662dfffff",
+	"881fb46625fffff",
+	"881fb46627fffff",
+	"881fb46623fffff",
+	"881fb46621fffff",
+	"891fb4662b7ffff",
+	"891fb4662b3ffff",
+	"891fb4662bbffff",
+	"891fb4662abffff",
+	"891fb4662afffff",
+	"891fb4662a7ffff",
+	"891fb4662a3ffff",
+	"861fb4667ffffff",
+];
 
-	"871fb4644ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4644ffffff", true)
-	},
-	"871fb4670ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4670ffffff", true)
-	},
-	"871fb4674ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4674ffffff", true)
-	},
+var defaultsHash = {};
 
-	"871fb4663ffffff": {
+for (var i in HASHDEMO) {
+	defaultsHash[HASHDEMO[i]] = {
 		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4663ffffff", true)
-	},
-	"871fb475bffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb475bffffff", true)
-	},
-	"871fb4666ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4666ffffff", true)
-	},
-	"871fb4660ffffff": {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo("871fb4660ffffff", true)
+		"geometry": h3.h3ToGeo(HASHDEMO[i], true)
 	}
-};
+}
 
 var h3Dataset = {};
 
