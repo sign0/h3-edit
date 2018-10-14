@@ -74,27 +74,27 @@
 			<hr>
 			<div style="margin-bottom: 20px;">
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Hexagon resolution : </div>
-				<input id="resolution" type="number" min="0" max="15" value="7" style="margin-right: 10px; width: 50px;height: 20px;"/>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative;" onclick="">-</button>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative;" onclick="">+</button>
+				<input id="resolution" type="number" min="0" max="15" value="7" style="margin-right: 10px; width: 50px;height: 20px; background-color: lightgray; border-color: lightgray;"/>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="removeResolution();">-</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="addResolution();">+</button>
 			</div>
 			<hr>
 			<div style="margin-bottom: 20px;">
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Hexagon fill color : </div>
 				<input type="text" id="fill"/>
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Opactity : </div>
-				<input id="fill-opacity-value" type="number" min="0" max="1" value="0.3" style="margin-right: 10px; width: 50px;height: 20px;"/>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative;" onclick="removeCellFillOpacity();">-</button>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative;" onclick="addCellFillOpacity();">+</button>
+				<input id="fill-opacity-value" type="number" min="0" max="1" value="0.3" style="margin-right: 10px; width: 50px;height: 20px; background-color: lightgray; border-color: lightgray;"/>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="removeCellFillOpacity();">-</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="addCellFillOpacity();">+</button>
 			</div>
 			<hr>
 			<div style="margin-bottom: 20px;">
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Hexagon stroke color : </div>
 				<input type="text" id="stroke"/>
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Opactity : </div>
-				<input id="stroke-opacity-value" type="number" min="0" max="1" value="0.3" style="margin-right: 10px; width: 50px; height: 20px;"/>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative;" onclick="removeCellStrokeOpacity();">-</button>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative;" onclick="addCellStrokeOpacity();">+</button>
+				<input id="stroke-opacity-value" type="number" min="0" max="1" value="0.3" style="margin-right: 10px; width: 50px; height: 20px; background-color: lightgray; border-color: lightgray;"/>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="removeCellStrokeOpacity();">-</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="addCellStrokeOpacity();">+</button>
 			</div>
 			<hr>
 			<div style="font-size: 22px; color: white;">Keyboard shortcuts :</div>

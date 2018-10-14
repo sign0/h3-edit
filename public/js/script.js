@@ -143,7 +143,7 @@ var styleFunction = function(feature) {
 */
 
 var layerOSM = new ol.layer.Tile({
-	name: "swailShom",
+	name: "OSMBW",
 	type: "base",
 	visible: true,
 	source: new ol.source.XYZ({
@@ -290,11 +290,12 @@ map.on("singleclick", _.debounce(function(evt) {
 			insertCell(feature);
 		});
 	} else if (currentTool === "remove") {
-		if (h3.h3GetResolution(feature.get("hash")) === RESOLUTION) {
-			map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+		map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+			//console.log(feature, h3.h3GetResolution(feature.get("hash")), RESOLUTION)
+			if (h3.h3GetResolution(feature.get("hash")) === RESOLUTION) {
 				removeCell(feature);
-			});
-		}
+			}
+		});
 	} else {
 		//
 	}
@@ -378,6 +379,15 @@ var removeCell = function(feature) {
 	$("textarea#h3").text(h3String);
 	layerCells.getSource().removeFeature(feature);
 	delete h3Dataset[feature.get("hash")];
+	var tmpGeojson = JSON.parse(h3Geojson);
+	var newTmpGeojson = {"type":"FeatureCollection","features":[]};
+	for (var i in tmpGeojson.features) {
+		if (tmpGeojson.features[i].properties.h3 !== feature.get("hash")) {
+			newTmpGeojson.features.push(tmpGeojson.features[i]);
+		}
+	}
+	h3Geojson = JSON.stringify(newTmpGeojson);
+	$("textarea#geojson").text(h3Geojson);
 };
 
 
@@ -550,7 +560,17 @@ var removeCellStrokeOpacity = function() {
 	$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
 };
 
+var addResolution = function() {
+	if (RESOLUTION<15) RESOLUTION+=1;
+	document.getElementById("resolution").value = RESOLUTION;
+	console.log("[RESOLUTION]", "R"+(RESOLUTION-1), "to", "R"+RESOLUTION);
+};
 
+var removeResolution = function() {
+	if (RESOLUTION>0) RESOLUTION+=-1;
+	document.getElementById("resolution").value = RESOLUTION;
+	console.log("[RESOLUTION]", "R"+(RESOLUTION+1), "to", "R"+RESOLUTION);
+};
 
 
 
