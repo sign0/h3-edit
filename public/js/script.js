@@ -284,8 +284,7 @@ resolutionForm.addEventListener("change", function(event) {
 
 
 
-
-map.on("click", _.debounce(function(evt) {
+map.on("singleclick", _.debounce(function(evt) {
 	if (evt.originalEvent.shiftKey === true || currentTool === "add") {
 		map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
 			insertCell(feature);
@@ -375,10 +374,8 @@ var insertCell = function(feature) {
 
 
 var removeCell = function(feature) {
-	console.log(1, h3String);
 	h3String = h3String.replace(feature.get("hash")+"\n", "");
 	$("textarea#h3").text(h3String);
-	console.log(2, h3String);
 	layerCells.getSource().removeFeature(feature);
 	delete h3Dataset[feature.get("hash")];
 };
@@ -444,12 +441,12 @@ $("textarea#h3").bind("input propertychange", function(evt) {
 		var newVal = $("textarea#h3").val();
 		if (newVal !== h3String) {
 			var splitted = h3String.split("\n");
-			console.log("splitted", splitted)
+			//console.log("splitted", splitted)
 			for (var i in splitted) {
 				if (newVal.match(splitted[i])[0] !== "") {
-					console.log("MATCH");
+					//console.log("MATCH");
 				} else {
-					console.log("UNMATCH");
+					//console.log("UNMATCH");
 				}
 			}
 		}
