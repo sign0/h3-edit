@@ -1,3 +1,9 @@
+
+/*
+// GLOBALS
+*/
+
+
 var CENTER = [2.3859, 48.8500];
 var ZOOM = 12.5;
 var RESOLUTION = 7;
@@ -12,47 +18,18 @@ var CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+"
 //var IDXGRID = {};
 var TILES = {};
 
-var HASHDEMO = [
-	"871fb4662ffffff",
-	"871fb4663ffffff",
-	"871fb4660ffffff",
-	"881fb4662bfffff",
-	"881fb46629fffff",
-	"881fb4662dfffff",
-	"881fb46625fffff",
-	"881fb46627fffff",
-	"881fb46623fffff",
-	"881fb46621fffff",
-	"891fb4662b7ffff",
-	"891fb4662b3ffff",
-	"891fb4662bbffff",
-	"891fb4662abffff",
-	"891fb4662afffff",
-	"891fb4662a7ffff",
-	"891fb4662a3ffff",
-	"861fb4667ffffff",
-];
-
-var defaultsHash = {};
-
-for (var i in HASHDEMO) {
-	defaultsHash[HASHDEMO[i]] = {
-		"type": "Feature",
-		"geometry": h3.h3ToGeo(HASHDEMO[i], true)
-	}
-}
-
-var h3Dataset = {};
 
 /*
-//
+// MAP STYLE
 */
+
 
 var image = new ol.style.Circle({
 	radius: 5,
 	fill: null,
 	stroke: new ol.style.Stroke({color: 'red', width: 1})
 });	
+
 
 var styles = {
 	'Point': new ol.style.Style({
@@ -119,13 +96,16 @@ var styles = {
 	})
 };
 
+
 var styleFunction = function(feature) {
 	return styles[feature.getGeometry().getType()];
 };
 
+
 /*
-//
+// MAP CORE
 */
+
 
 var layerOSM = new ol.layer.Tile({
 	name: "OSMBW",
@@ -137,6 +117,7 @@ var layerOSM = new ol.layer.Tile({
 	}),
 	renderMode: "image",
 });
+
 
 var layerMousePosition = new ol.layer.Vector({
 	name: "mousePosition",
@@ -154,6 +135,7 @@ var layerMousePosition = new ol.layer.Vector({
 	style: styleFunction,
 });
 
+
 var layerCells = new ol.layer.Vector({
 	name: "cells",
 	type: "base",
@@ -165,6 +147,7 @@ var layerCells = new ol.layer.Vector({
 	renderMode: "image",
 	renderBuffer: 1024
 });
+
 
 var map = new ol.Map({
 	controls: ol.control.defaults({
@@ -189,120 +172,10 @@ var map = new ol.Map({
   ])
 });
 
+
 /*
-//
+// UTILS
 */
-
-var hex2Rgba = function(hex, opactity){
-  var c;
-  if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
-    c = hex.substring(1).split("");
-    if(c.length== 3){
-      c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-    }
-    c = "0x" + c.join("");
-    if (opactity === undefined || opactity === null || opactity > 1 || opactity < 0) opactity = 1;
-    return "rgba("+[(c>>16)&255, (c>>8)&255, c&255].join(",")+","+opactity+")";
-  }
-  throw new Error('Bad Hex');
-};
-
-var polygonH3To4326 = function(coords) {
-	for (var i in coords) {
-		coords[i] = ol.proj.fromLonLat(coords[i]);
-	}
-	return coords;
-};
-
-var updateHexCursor = function(lat, lon, resolution) {
-	var hash = h3.geoToH3(lat||centerInit[1], lon||centerInit[0], resolution||RESOLUTION);
-	if (MOUSEH3 !== hash) {
-		MOUSEH3 = hash;
-		var hexagon = h3.h3ToGeoBoundary(hash, true);
-		map.getLayers().forEach(function(layer) {
-			if (layer.get("name") === "mousePosition") {
-				var polygon = new ol.geom.Polygon([polygonH3To4326(hexagon)]);
-				layer.getSource().getFeatures()[0].set("hash", hash);
-				layer.getSource().getFeatures()[0].setGeometry(polygon);
-				console.log("[CURSOR]", "R"+RESOLUTION, hash);
-			}
-		});
-	}
-};
-
-
-
-map.on("pointermove", function(evt) {
-	if (evt.dragging) return;
-	MOUSECOORDS = evt.coordinate;
-	var point3857To4326 = ol.proj.transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
-	updateHexCursor(point3857To4326[1], point3857To4326[0]);
-});
-
-
-
-
-var currentTool = "add";
-
-var toolAdd = function() {
-  $("#tool-button-add").addClass("panel-icon-tool-selected");
-  $("#tool-button-remove").removeClass("panel-icon-tool-selected");
-  $("#tool-button-move").removeClass("panel-icon-tool-selected");
-  currentTool = "add";
-};
-
-var toolRemove = function() {
-  $("#tool-button-add").removeClass("panel-icon-tool-selected");
-  $("#tool-button-remove").addClass("panel-icon-tool-selected");
-  $("#tool-button-move").removeClass("panel-icon-tool-selected");
-  currentTool = "remove";
-};
-
-
-
-
-var resolutionForm = document.getElementById("resolution");
-resolutionForm.addEventListener("change", function(event) {
-	console.log("FORM", event);
-	RESOLUTION = event.target.valueAsNumber;
-});
-
-
-
-map.on("singleclick", _.debounce(function(evt) {
-	if (evt.originalEvent.shiftKey === true || currentTool === "add") {
-		map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-			insertCell(feature);
-		});
-	} else if (currentTool === "remove") {
-		map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-			//console.log(feature, h3.h3GetResolution(feature.get("hash")), RESOLUTION)
-			if (h3.h3GetResolution(feature.get("hash")) === RESOLUTION) {
-				removeCell(feature);
-			}
-		});
-	} else {
-		//
-	}
-}, 10));
-
-
-
-
-document.addEventListener("keydown", function(event) {
-	if (event.which === 81) { // KEY Q : RESOLUTION DOWN
-		if (RESOLUTION<15) RESOLUTION+=1;
-		document.getElementById("resolution").value = RESOLUTION;
-		console.log("[RESOLUTION]", "R"+(RESOLUTION-1), "to", "R"+RESOLUTION);
-	}
-	if (event.which === 87) { // KEY W : RESOLUTION UP
-		if (RESOLUTION>0) RESOLUTION+=-1;
-		document.getElementById("resolution").value = RESOLUTION;
-		console.log("[RESOLUTION]", "R"+(RESOLUTION+1), "to", "R"+RESOLUTION);
-	}
-});
-
-
 
 
 var insertCell = function(feature) {
@@ -376,24 +249,147 @@ var removeCell = function(feature) {
 };
 
 
+var hex2Rgba = function(hex, opactity){
+  var c;
+  if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+    c = hex.substring(1).split("");
+    if(c.length== 3){
+      c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+    }
+    c = "0x" + c.join("");
+    if (opactity === undefined || opactity === null || opactity > 1 || opactity < 0) opactity = 1;
+    return "rgba("+[(c>>16)&255, (c>>8)&255, c&255].join(",")+","+opactity+")";
+  }
+  throw new Error('Bad Hex');
+};
 
 
+var polygonH3To4326 = function(coords) {
+	for (var i in coords) {
+		coords[i] = ol.proj.fromLonLat(coords[i]);
+	}
+	return coords;
+};
 
 
+var updateHexCursor = function(lat, lon, resolution) {
+	var hash = h3.geoToH3(lat||centerInit[1], lon||centerInit[0], resolution||RESOLUTION);
+	if (MOUSEH3 !== hash) {
+		MOUSEH3 = hash;
+		var hexagon = h3.h3ToGeoBoundary(hash, true);
+		map.getLayers().forEach(function(layer) {
+			if (layer.get("name") === "mousePosition") {
+				var polygon = new ol.geom.Polygon([polygonH3To4326(hexagon)]);
+				layer.getSource().getFeatures()[0].set("hash", hash);
+				layer.getSource().getFeatures()[0].setGeometry(polygon);
+				console.log("[CURSOR]", "R"+RESOLUTION, hash);
+			}
+		});
+	}
+};
 
 
+/*
+// EVENTS
+*/
 
 
+map.on("pointermove", function(evt) {
+	if (evt.dragging) return;
+	MOUSECOORDS = evt.coordinate;
+	var point3857To4326 = ol.proj.transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
+	updateHexCursor(point3857To4326[1], point3857To4326[0]);
+});
 
 
+map.on("singleclick", _.debounce(function(evt) {
+	if (evt.originalEvent.shiftKey === true || currentTool === "add") {
+		map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+			insertCell(feature);
+		});
+	} else if (currentTool === "remove") {
+		map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+			//console.log(feature, h3.h3GetResolution(feature.get("hash")), RESOLUTION)
+			if (h3.h3GetResolution(feature.get("hash")) === RESOLUTION) {
+				removeCell(feature);
+			}
+		});
+	} else {
+		//
+	}
+}, 10));
 
 
+document.addEventListener("keydown", function(event) {
+	if (event.which === 81) { // KEY Q : RESOLUTION DOWN
+		if (RESOLUTION<15) RESOLUTION+=1;
+		document.getElementById("resolution").value = RESOLUTION;
+		console.log("[RESOLUTION]", "R"+(RESOLUTION-1), "to", "R"+RESOLUTION);
+	}
+	if (event.which === 87) { // KEY W : RESOLUTION UP
+		if (RESOLUTION>0) RESOLUTION+=-1;
+		document.getElementById("resolution").value = RESOLUTION;
+		console.log("[RESOLUTION]", "R"+(RESOLUTION+1), "to", "R"+RESOLUTION);
+	}
+});
 
 
+$("textarea#h3").bind("input propertychange", function(evt) {
+	if (panel === "h3") {
+		var newVal = $("textarea#h3").val();
+		//console.log("NEWVAL1", newVal);
+		if (newVal !== h3String) {
+			var splittedINPUT = newVal.split("\n");
+			var splittedLOCAL = h3String.split("\n");
+			console.log("splitted", splittedINPUT, splittedLOCAL);
+			for (var i in splittedINPUT) {
+				for (var l in splittedLOCAL) {
+					//if (splittedINPUT[i] && splittedLOCAL[i]) console.log(splittedINPUT[i], splittedLOCAL[i], splittedINPUT[i] === splittedLOCAL[i]);
+					console.log(splittedINPUT[i], splittedLOCAL[i], splittedINPUT[i] === splittedLOCAL[i]);
+				}
+				//if (newVal.match(splitted[i])[0] !== "") {
+				//	//console.log("MATCH");
+				//} else {
+				//	//console.log("UNMATCH");
+				//}
+			}
+		}
+	}
+});
 
+
+/*
+// UI
+*/
+
+
+var h3Dataset = {};
+var defaultsHash = {};
+
+
+var h3String = "";
+var h3Geojson = "{\"type\":\"FeatureCollection\",\"features\":[]}";
 
 
 var panel = "h3";
+var currentTool = "add";
+
+
+var selectTool = function(id) {
+	if (id === "add") {
+		$("#tool-button-add").addClass("panel-icon-tool-selected");
+	  $("#tool-button-remove").removeClass("panel-icon-tool-selected");
+	  $("#tool-button-move").removeClass("panel-icon-tool-selected");
+	  currentTool = id;
+	}
+	if (id === "remove") {
+		$("#tool-button-add").removeClass("panel-icon-tool-selected");
+	  $("#tool-button-remove").addClass("panel-icon-tool-selected");
+	  $("#tool-button-move").removeClass("panel-icon-tool-selected");
+	  currentTool = id;
+	}
+};
+
 
 var switchPanel = function(id) {
 	if (id === "geojson") {
@@ -416,60 +412,23 @@ var switchPanel = function(id) {
 	}
 };
 
-var h3String = "";
-var h3Geojson = "{\"type\":\"FeatureCollection\",\"features\":[]}";
 
-for (var hash in defaultsHash) {
-	var hexagon = h3.h3ToGeoBoundary(hash, true);
-	var polygon = new ol.geom.Polygon([polygonH3To4326(hexagon)]);
-	var feature = new ol.Feature({
-		geometry: polygon,
-		id: hash
-	});
-	feature.values_.hash = hash;
-	insertCell(feature);
-}
-
-//871fb4660ffffff
-$("textarea#h3").bind("input propertychange", function(evt) {
-	if (panel === "h3") {
-		var newVal = $("textarea#h3").val();
-		if (newVal !== h3String) {
-			var splitted = h3String.split("\n");
-			//console.log("splitted", splitted)
-			for (var i in splitted) {
-				if (newVal.match(splitted[i])[0] !== "") {
-					//console.log("MATCH");
-				} else {
-					//console.log("UNMATCH");
-				}
-			}
-		}
+var panel = function(state) {
+	if (state === "open") {
+		$("#panel-open-button").hide();
+		$("#panel").animate({
+	    right: "0px",
+	  }, 666, function() {
+	  	//
+	  });
 	}
-});
-
-$("textarea#geojson").bind("input propertychange", function(evt) {
-	if (panel === "geojson") console.log("evt:", evt, $("textarea#geojson").val());
-});
-
-//switchPanel("h3");
-switchPanel("edit");
-
-var openPanel = function() {
-  $("#panel-open-button").hide();
-	$("#panel").animate({
-    right: "0px",
-  }, 666, function() {
-  	//
-  });
-};
-
-var closePanel = function() {
-	$("#panel").animate({
-    right: "-425px",
-  }, 666, function() {
-    $("#panel-open-button").show();
-  });
+	if (state === "close") {
+		$("#panel").animate({
+	    right: "-425px",
+	  }, 666, function() {
+	    $("#panel-open-button").show();
+	  });
+	}
 };
 
 
@@ -495,6 +454,7 @@ $("#fill").spectrum({
   ]
 });
 
+
 $("#stroke").spectrum({
   move: function(tinycolor) {
   	CELLSTROKERGBA = [Math.round(tinycolor._r),Math.round(tinycolor._g),Math.round(tinycolor._b)];
@@ -517,50 +477,107 @@ $("#stroke").spectrum({
   ]
 });
 
-var addCellFillOpacity = function() {
-	if (CELLFILLOPACITY+.1 < 1) CELLFILLOPACITY = CELLFILLOPACITY+.1;
-	else CELLFILLOPACITY = 1;
-	CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
-	$("#fill-opacity-value").val(CELLFILLOPACITY);
-};
 
-var removeCellFillOpacity = function() {
-	if (CELLFILLOPACITY-.1 > 0) CELLFILLOPACITY = CELLFILLOPACITY-.1;
-	else CELLFILLEOPACITY = 0;
-	CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
-	$("#fill-opacity-value").val(CELLFILLOPACITY);
-};
-
-var addCellStrokeOpacity = function() {
-	if (CELLSTROKEOPACITY+.1 < 1) CELLSTROKEOPACITY = CELLSTROKEOPACITY+.1;
-	else CELLSTROKEOPACITY = 1;
-	CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
-	$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
-};
-
-var removeCellStrokeOpacity = function() {
-	if (CELLSTROKEOPACITY-.1 > 0) CELLSTROKEOPACITY = CELLSTROKEOPACITY-.1;
-	else CELLSTROKEOPACITY = 0;
-	CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
-	$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
-};
-
-var addResolution = function() {
-	if (RESOLUTION<15) RESOLUTION+=1;
-	document.getElementById("resolution").value = RESOLUTION;
-	console.log("[RESOLUTION]", "R"+(RESOLUTION-1), "to", "R"+RESOLUTION);
-};
-
-var removeResolution = function() {
-	if (RESOLUTION>0) RESOLUTION+=-1;
-	document.getElementById("resolution").value = RESOLUTION;
-	console.log("[RESOLUTION]", "R"+(RESOLUTION+1), "to", "R"+RESOLUTION);
+var cellOpacity = function(type, mode) {
+	if (type === "fill") {
+		if (mode === "add") {
+			if (CELLFILLOPACITY+.1 < 1) CELLFILLOPACITY = CELLFILLOPACITY+.1;
+			else CELLFILLOPACITY = 1;
+			CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
+			$("#fill-opacity-value").val(CELLFILLOPACITY);
+		}
+		if (mode === "remove") {
+			if (CELLFILLOPACITY-.1 > 0) CELLFILLOPACITY = CELLFILLOPACITY-.1;
+			else CELLFILLEOPACITY = 0;
+			CELLFILL = "rgba("+CELLFILLRGBA[0]+","+CELLFILLRGBA[1]+","+CELLFILLRGBA[2]+","+CELLFILLOPACITY+")";
+			$("#fill-opacity-value").val(CELLFILLOPACITY);
+		}
+	}
+	if (type === "stroke") {
+		if (mode === "add") {
+			if (CELLSTROKEOPACITY+.1 < 1) CELLSTROKEOPACITY = CELLSTROKEOPACITY+.1;
+			else CELLSTROKEOPACITY = 1;
+			CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
+			$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
+		}
+		if (mode === "remove") {
+			if (CELLSTROKEOPACITY-.1 > 0) CELLSTROKEOPACITY = CELLSTROKEOPACITY-.1;
+			else CELLSTROKEOPACITY = 0;
+			CELLSTROKE = "rgba("+CELLSTROKERGBA[0]+","+CELLSTROKERGBA[1]+","+CELLSTROKERGBA[2]+","+CELLSTROKEOPACITY+")";
+			$("#stroke-opacity-value").val(CELLSTROKEOPACITY);
+		}
+	}
 };
 
 
+var resolution = function(mode) {
+	if (mode === "add") {
+		if (RESOLUTION<15) RESOLUTION+=1;
+		document.getElementById("resolution").value = RESOLUTION;
+		console.log("[RESOLUTION]", "R"+(RESOLUTION-1), "to", "R"+RESOLUTION);
+	}
+	if (mode === "remove") {
+		if (RESOLUTION>0) RESOLUTION+=-1;
+		document.getElementById("resolution").value = RESOLUTION;
+		console.log("[RESOLUTION]", "R"+(RESOLUTION+1), "to", "R"+RESOLUTION);
+	}
+};
 
 
+/*
+// MAIN
+*/
 
+
+var HASHDEMO = [
+	"871fb4662ffffff",
+	"871fb4663ffffff",
+	"871fb4660ffffff",
+	"881fb4662bfffff",
+	"881fb46629fffff",
+	"881fb4662dfffff",
+	"881fb46625fffff",
+	"881fb46627fffff",
+	"881fb46623fffff",
+	"881fb46621fffff",
+	"891fb4662b7ffff",
+	"891fb4662b3ffff",
+	"891fb4662bbffff",
+	"891fb4662abffff",
+	"891fb4662afffff",
+	"891fb4662a7ffff",
+	"891fb4662a3ffff",
+	"861fb4667ffffff",
+];
+
+
+for (var i in HASHDEMO) {
+	defaultsHash[HASHDEMO[i]] = {
+		"type": "Feature",
+		"geometry": h3.h3ToGeo(HASHDEMO[i], true)
+	}
+}
+
+
+for (var hash in defaultsHash) {
+	var hexagon = h3.h3ToGeoBoundary(hash, true);
+	var polygon = new ol.geom.Polygon([polygonH3To4326(hexagon)]);
+	var feature = new ol.Feature({
+		geometry: polygon,
+		id: hash
+	});
+	feature.values_.hash = hash;
+	insertCell(feature);
+}
+
+
+$("textarea#geojson").bind("input propertychange", function(evt) {
+	if (panel === "geojson") console.log("evt:", evt, $("textarea#geojson").val());
+});
+
+
+//switchPanel("h3");
+switchPanel("edit");
 
 
 

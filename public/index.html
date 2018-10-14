@@ -19,9 +19,9 @@
 	<div id="map" class="map"></div>
 
 	<div id="panel">
-		<a id="panel-open-button" href="#" onclick="openPanel();"><</a>
+		<a id="panel-open-button" href="#" onclick="panel('open');"><</a>
 		<div id="panel-menu">
-			<a class="panel-menu-button" href="#" onclick="closePanel();">
+			<a class="panel-menu-button" href="#" onclick="panel('close');">
 				>
 			</a>
 			<div class="separator">|</div>
@@ -43,12 +43,12 @@
 			<div style="margin-bottom: 20px;">
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Tool : </div>
 				<div style="display: inline-flex;">
-					<div id="tool-button-add" class="panel-icon-tool-selected" onclick="toolAdd();">
+					<div id="tool-button-add" class="panel-icon-tool-selected" onclick="selectTool('add');">
 						<img src="./img/drawing.svg" id="panel-icon-tools">
 						<div style="margin: 4px; text-align: center; color: white;">Add</div>
 					</div>
 					<div id="tool-button-remove" class="" style="margin-right: 25px;">
-						<img src="./img/eraser.svg" id="panel-icon-tools" onclick="toolRemove();">
+						<img src="./img/eraser.svg" id="panel-icon-tools" onclick="selectTool('remove');">
 						<div style="margin: 4px; text-align: center; color: white;">Remove</div>
 					</div>
 					<!--
@@ -75,8 +75,8 @@
 			<div style="margin-bottom: 20px;">
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Hexagon resolution : </div>
 				<input id="resolution" type="number" min="0" max="15" value="7" style="margin-right: 10px; width: 50px;height: 20px; background-color: lightgray; border-color: lightgray;"/>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="removeResolution();">-</button>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="addResolution();">+</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="resolution('remove');">-</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="resolution('add');">+</button>
 			</div>
 			<hr>
 			<div style="margin-bottom: 20px;">
@@ -84,8 +84,8 @@
 				<input type="text" id="fill"/>
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Opactity : </div>
 				<input id="fill-opacity-value" type="number" min="0" max="1" value="0.3" style="margin-right: 10px; width: 50px;height: 20px; background-color: lightgray; border-color: lightgray;"/>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="removeCellFillOpacity();">-</button>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="addCellFillOpacity();">+</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="cellOpacity('fill', 'remove');">-</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="cellOpacity('fill', 'add');">+</button>
 			</div>
 			<hr>
 			<div style="margin-bottom: 20px;">
@@ -93,8 +93,8 @@
 				<input type="text" id="stroke"/>
 				<div style="margin-right: 10px; line-height: 30px; color: white;">Opactity : </div>
 				<input id="stroke-opacity-value" type="number" min="0" max="1" value="0.3" style="margin-right: 10px; width: 50px; height: 20px; background-color: lightgray; border-color: lightgray;"/>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="removeCellStrokeOpacity();">-</button>
-				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="addCellStrokeOpacity();">+</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="cellOpacity('stroke', 'remove');">-</button>
+				<button style="margin-right: 10px; width: 50px; font-size: 18px; top: 2px; position: relative; background-color: lightgray; border-color: lightgray;" onclick="cellOpacity('stroke', 'add');">+</button>
 			</div>
 			<hr>
 			<div style="font-size: 22px; color: white;">Keyboard shortcuts :</div>
